@@ -14,10 +14,11 @@ import sys
 #change names of train and val dataset
 #Removed 
 #--attention_type='standard' \
+#--out_dir='wikitexts-byt5-std-'$wandb_name \
 shell_cmd = r"""python train.py \
 --dataset='wikitexts' \
 --init_from='scratch' \
---out_dir='wikitexts-byt5-std-'$wandb_name \
+--out_dir='debug-run' \
 --eval_interval=5 \
 --eval_iters=40 \
 --is_cached=False \
