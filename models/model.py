@@ -248,7 +248,7 @@ class GPT(nn.Module):
             logits = self.lm_head(x[:, [-1], :]) # note: using list [-1] to preserve the time dim
             loss_for_back_propagate = None
             loss_for_reporting = None
-        return loss_for_back_propagate, loss_for_reporting, logits
+        return loss_for_back_propagate, loss_for_reporting
 
 
     def crop_block_size(self, block_size):
@@ -484,6 +484,24 @@ class GPT(nn.Module):
         flops_promised = 312e12 # A100 GPU bfloat16 peak flops is 312 TFLOPS
         mfu = flops_achieved / flops_promised
         return mfu
+
+    @torch.no_grad()
+    def logits_extractor(self, idx, top_k=None):
+        # Crop the sequence to the block size
+        idx_cond = idx if idx.size(1) <= self.config.block_size else idx[:, -self.config.block_size:]
+        # Forward the model to get the logits for the index in the sequence
+        logits, _ = self(idx_cond)
+        # Pluck the logits at the final step
+        logits = logits[:, -1, :]
+
+        # Crop the logits to only the top k options
+        if top_k is not None:
+            v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
+            logits[logits < v[:, [-1]]] = -float('Inf')
+
+        # Return the logits
+        return logits
+        
 
     @torch.no_grad()
     def generate(self, idx, max_new_tokens, temperature=1.0, top_k=None):
