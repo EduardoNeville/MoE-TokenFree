@@ -1,0 +1,51 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Ignore all files with .pkl, .bin, .zip extensions
+*.pkl
+*.bin
+*.zip
+*.tar
+
+# Ignore all folders that start with "wand"
+wandb/
+
+# Ignore all folders that start with "out-"
+out-*/
+fout-*/
+
+# Ignore specific dataset files
+data/agnews/config.json
+data/agnews/rawdata/
+data/shakespeare/input.txt
+data/shakespeare_char/input.txt
+data/wikitexts/wikitext-103-raw/
+data/multilingual_wiki/test/
+data/multilingual_wiki/train/
+data/multilingual_wiki_test/
+data/multilingual_wiki/config.json
+data/multilingual_wikiconfig.json 
+
+# Ignore the tokenized datasets
+2022*/
+
+# Ignore all logs
+logs/
+
+# Ignore lsp ruff_cache
+.ruff_*/
+pyrightconfig.json
+
+# Ignore .DS_Store files
+.DS_Store
+__MACOSX/
+
+# Ignore model weights
+model_weights/
+
+# Ignore 124M
+models/124M/
+
+# Ignore evals data
+evals/mmlu/mmlu/data/
