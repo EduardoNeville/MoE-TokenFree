@@ -15,22 +15,23 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+from torch import Tensor
 from typing import List
 
 from models import get_linear_factory, get_custom_module_factory, model_types
 
 # @torch.jit.script # good to enable when not using torch.compile, disable when using (our default)
-def new_gelu(x):
+def new_gelu(x: Tensor)-> Tensor:
     """
     Implementation of the GELU activation function currently in Google BERT repo (identical to OpenAI GPT).
     Reference: Gaussian Error Linear Units (GELU) paper: https://arxiv.org/abs/1606.08415
     """
     return 0.5 * x * (1.0 + torch.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * torch.pow(x, 3.0))))
 
-def to_lin_type_for(name, target_modules):
+def to_lin_type_for(name: str, target_modules)-> str:
     return  model_types.LORA if name in target_modules else model_types.STANDARD
 
-def to_more_type_for(name, target_modules):
+def to_more_type_for(name: str, target_modules) -> str:
     return  model_types.MOE if name in target_modules else model_types.STANDARD
 
 class LayerNorm(nn.Module):
@@ -75,7 +76,7 @@ class CausalSelfAttention(nn.Module):
             print("WARNING: using slow attention. Flash Attention requires PyTorch >= 2.0")
             # causal mask to ensure that attention is only applied to the left in the input sequence
             self.register_buffer("bias", torch.tril(torch.ones(config.block_size, config.block_size))
-                                        .view(1, 1, config.block_size, config.block_size))
+            .view(1, 1, config.block_size, config.block_size))
 
     def forward(self, x):
         B, T, C = x.size() # batch size, sequence length, embedding dimensionality (n_embd)
@@ -147,7 +148,7 @@ class GPTConfig:
 
     # lora_target_modules: List[str] = field(default_factory=lambda: model_types.C_PROJ)
     lora_rank: int = 0
-    lora_alpha: int = 0.0
+    lora_alpha: int = 0
     lora_dropout: float = 0.0
     lora_target_modules: List[str] = field(default_factory=lambda: [ "c_attn", "mlp.c_proj" ])
 
@@ -156,7 +157,7 @@ class GPTConfig:
     straight_through: bool = False 
     moe_target_modules: List[str] = field(default_factory=lambda:  [ "mlp" ])   
 
-    gating_type: int = model_types.TOPK
+    gating_type: str = model_types.TOPK
     noise_type: str = model_types.GUMBEL
     is_per_token: bool = False
     gated_layer_id: int = 0
@@ -173,7 +174,7 @@ class GPT(nn.Module):
         assert config.vocab_size is not None
         assert config.block_size is not None
         self.config = config
-        mlp_factory = get_custom_module_factory(to_more_type_for("mlp", config.moe_target_modules), config, MLP)
+        mlp_factory = get_custom_module_factory("mlp", config=config.moe_target_modules, module_factory=MLP)
         self.transformer = nn.ModuleDict(dict(
             wte = nn.Embedding(config.vocab_size, config.n_embd),
             wpe = nn.Embedding(config.block_size, config.n_embd),
@@ -198,7 +199,7 @@ class GPT(nn.Module):
         # report number of parameters
         print("number of parameters: %.2fM" % (self.get_num_params()/1e6,))
 
-    def get_num_params(self, non_embedding=True):
+    def get_num_params(self, non_embedding:bool=True):
         """
         Return the number of parameters in the model.
         For non-embedding count (default), the position embeddings get subtracted.
@@ -235,6 +236,8 @@ class GPT(nn.Module):
                 # TODO: fix for attention MoE
                 load_balancing_loss += block.mlp.get_load_balancing_loss(x)
         x = self.transformer.ln_f(x)
+        loss_for_reporting = None
+        loss_for_back_propagate = None
         if targets is not None:
             # if we are given some desired targets also calculate the loss
             logits = self.lm_head(x)
@@ -250,7 +253,7 @@ class GPT(nn.Module):
         return loss_for_back_propagate, loss_for_reporting
 
 
-    def crop_block_size(self, block_size):
+    def crop_block_size(self, block_size: int):
         # model surgery to decrease the block size if necessary
         # e.g. we may load the GPT2 pretrained model checkpoint (block size 1024)
         # but want to use a smaller block size for some smaller, simpler model
@@ -262,7 +265,7 @@ class GPT(nn.Module):
                 block.attn.bias = block.attn.bias[:,:,:block_size,:block_size]
 
     @classmethod
-    def from_pretrained(cls, model_type, override_args=None):
+    def from_pretrained(cls, model_type: str, override_args=None):
         """
         Loading pretrained GPT-2 models from HuggingFace hub.
         """
@@ -285,45 +288,20 @@ class GPT(nn.Module):
         config_args['vocab_size'] = 50257 # always 50257 for GPT model checkpoints
         config_args['block_size'] = 1024 # always 1024 for GPT model checkpoints
         config_args['bias'] = True # always True for GPT model checkpoints
-        # we can override the dropout rate, if desired
-        if 'dropout' in override_args:
-            print(f"overriding dropout rate to {override_args['dropout']}")
-            config_args['dropout'] = override_args['dropout']
-        if 'lora_rank' in override_args:
-            print(f"overriding lora_rank and lora_alpha to {override_args['lora_rank']}")
-            config_args['lora_rank'] = override_args['lora_rank']
-            config_args['lora_alpha'] = override_args['lora_alpha']
-            if 'lora_dropout' in override_args:
-                print(f"overriding lora_dropout to {override_args['lora_dropout']}")
-                config_args['lora_dropout'] = override_args['lora_dropout']
-        if 'batch_size' in override_args:
-            config_args['batch_size'] = override_args['batch_size']
-        if 'device' in override_args:
-            config_args['device'] = override_args['device']
-        if 'gating_type' in override_args:
-            config_args['gating_type'] = override_args['gating_type']
-        if 'router_type' in override_args:
-            config_args['router_type'] = override_args['router_type']
-        if 'lin_type' in override_args:
-            config_args['lin_type'] = override_args['lin_type']
-        if 'expert_num' in override_args:
-            config_args['expert_num'] = override_args['expert_num']
-        if 'noise_type' in override_args:
-            config_args['noise_type'] = override_args['noise_type']
-        if 'load_balancing' in override_args:
-            config_args['load_balancing'] = override_args['load_balancing']
-        if 'load_balancing_lambda' in override_args:
-            config_args['load_balancing_lambda'] = override_args['load_balancing_lambda']
-        if 'straight_through' in override_args:
-            config_args['straight_through'] = override_args['straight_through']
-        if 'is_per_token' in override_args:
-            config_args['is_per_token'] = override_args['is_per_token']
-        if 'topk_exp' in override_args:
-            config_args['topk_exp'] = override_args['topk_exp']
-        if 'moe_target_modules' in override_args:
-            config_args['moe_target_modules'] = override_args['moe_target_modules']
-        if 'lora_target_modules' in override_args:
-            config_args['lora_target_modules'] = override_args['lora_target_modules']
+
+        args = [ 'dropout', 'lora_rank', 'batch_size', 'device', 'gating_type', 'router_type', 'lin_type', 'expert_num', 'noise_type', 'load_balancing', 'load_balancing_lambda', 'straight_through', 'is_per_token', 'topk_exp', 'moe_target_modules', 'lora_target_modules']
+
+        for arg in args:
+            if arg in override_args:
+                if arg == 'dropout':
+                    print(f"overriding dropout rate to {override_args['dropout']}")
+                if arg == 'lora_rank':
+                    print(f"overriding lora_rank and lora_alpha to {override_args['lora_rank']}")
+                    config_args['lora_alpha'] = override_args['lora_alpha']
+                    if 'lora_dropout' in override_args:
+                        print(f"overriding lora_dropout to {override_args['lora_dropout']}")
+                        config_args['lora_dropout'] = override_args['lora_dropout']
+                config_args[arg] = override_args[arg]
 
         # create a from-scratch initialized minGPT model
         config = GPTConfig(**config_args)
