@@ -82,3 +82,13 @@ def block_decoding(blocks, blocs):
             text += char
         idx += 1
     return text
+
+def main():
+    text = "Hello, World!"
+    blocks = block_encoding(text, blocs)
+    print(f"Encoded blocks: {blocks}")
+    text_decoded = block_decoding(blocks, blocs)
+    print(f"Decoded text: {text_decoded}")
+
+if __name__ == "__main__":
+    main()
