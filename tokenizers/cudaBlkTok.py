@@ -1,5 +1,5 @@
 import cupy as cp
-from numba import cuda, uint8, uint16
+from numba import cuda, uint8, uint16, uint32
 import numpy as np
 import csv
 import sys
@@ -42,12 +42,14 @@ def find_block_kernel(chars, blocs, results):
                 results[idx] = (uint8(i), idx_on_block)
                 return
         results[idx] = (uint8(-1), uint8(-1))
+
 def find_block(chars, blocs):
-    results = cuda.device_array((chars.size,), dtype=np.int32)
+    results = cuda.device_array((chars.size,), dtype=uint32)
     threadsperblock = 256
     blockspergrid = (chars.size + (threadsperblock - 1)) // threadsperblock
     find_block_kernel[blockspergrid, threadsperblock](chars, blocs, results)
     return results
+
 def block_encoding(text, blocs):
     # Convert text to an array of Unicode code points
     chars = cp.array([ord(char) for char in text])
@@ -63,6 +65,7 @@ def block_encoding(text, blocs):
         else:
             blocks.append(idx_on_block)
     return blocks
+
 def block_decoding(blocks, blocs):
     text = ""
     curr_block = -1
