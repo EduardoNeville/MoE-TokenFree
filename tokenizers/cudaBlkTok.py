@@ -39,12 +39,14 @@ def find_block_kernel(chars, blocs, results):
                     idx_on_block = uint8(idx_on_block)
                 else:
                     idx_on_block = uint16(idx_on_block)
-                results[idx] = (uint8(i), idx_on_block)
+                results[idx*2] = uint8(i)
+                results[idx*2 + 1] = idx_on_block
                 return
-        results[idx] = (uint8(-1), uint8(-1))
+        results[idx*2] = uint8(-1)
+        results[idx*2 + 1] = uint8(-1)
 
 def find_block(chars, blocs):
-    results = cuda.device_array((chars.size,), dtype=uint32)
+    results = cuda.device_array((chars.size,))
     threadsperblock = 256
     blockspergrid = (chars.size + (threadsperblock - 1)) // threadsperblock
     find_block_kernel[blockspergrid, threadsperblock](chars, blocs, results)
@@ -58,12 +60,16 @@ def block_encoding(text, blocs):
     # Process results to form the final blocks array
     blocks = []
     curr_block = -1
-    for block, idx_on_block in results:
-        if block != curr_block:
-            blocks.extend([uint8(0), uint8(block + 1), idx_on_block])
-            curr_block = block
+    i = 0
+    while i < cp.ceil(results.size):
+        if results[i] != curr_block:
+            blocks.append(uint8(0))              # 0 indicates a new block
+            blocks.append(uint8(results[i] + 1)) # 1-based index of the block
+            blocks.append(results[i + 1])        # Index of the character in the block
+            curr_block = results[i]              # Update the current block
         else:
-            blocks.append(idx_on_block)
+            blocks.append(results[i + 1])        # Index of the character in the block
+        i += 2
     return blocks
 
 def block_decoding(blocks, blocs):
@@ -87,7 +93,7 @@ def main():
     text = "Hello, World!"
     blocks = block_encoding(text, blocs)
     print(f"Encoded blocks: {blocks}")
-    text_decoded = block_decoding(blocks, blocs)
+    #text_decoded = block_decoding(blocks, blocs)
     print(f"Decoded text: {text_decoded}")
 
 if __name__ == "__main__":
