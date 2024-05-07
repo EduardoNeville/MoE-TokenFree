@@ -31,8 +31,8 @@ def find_block_kernel(chars, blocs, results):
     if idx < chars.size:
         char = chars[idx]
         for i in range(blocs.shape[0]):
-            start = blocs[i]['start']
-            end = blocs[i]['end']
+            start = blocs[i][0]
+            end = blocs[i][1]
             if start <= char <= end:
                 idx_on_block = char - start
                 if idx_on_block < 256:
