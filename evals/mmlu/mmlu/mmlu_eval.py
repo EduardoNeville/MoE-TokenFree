@@ -27,7 +27,6 @@ from utils.gather_results import gather_results
 import sys
 import os
 
-
 choices = ["A", "B", "C", "D"]
 
 gate_type = "TopKBalancedNoisyGate"

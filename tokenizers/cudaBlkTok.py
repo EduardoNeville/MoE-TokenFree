@@ -36,9 +36,9 @@ def find_block_kernel(chars, blocs, results):
             if start <= char <= end:
                 idx_on_block = char - start
                 if idx_on_block < 256:
-                    idx_on_block = uint8(idx_on_block)
+                    idx_on_block = uint8(idx_on_block + 1)
                 else:
-                    idx_on_block = uint16(idx_on_block)
+                    idx_on_block = uint16(idx_on_block + 1)
                 results[idx*2] = uint8(i)
                 results[idx*2 + 1] = idx_on_block
                 return
@@ -55,6 +55,7 @@ def find_block(chars, blocs):
 def block_encoding(text, blocs):
     # Convert text to an array of Unicode code points
     chars = cp.array([ord(char) for char in text])
+    print(chars[:10])
     results = find_block(chars, blocs)
     
     # Process results to form the final blocks array

@@ -2,9 +2,12 @@ torch==2.0.1
 torchvision==0.15.2
 torchaudio==2.0.2
 transformers
-numpy
+numpy==1.22.4
 datasets
 mwparserfromhell
 ujson
 wandb
 tiktoken
+numba
+cupy-cuda12x
+setuptools
