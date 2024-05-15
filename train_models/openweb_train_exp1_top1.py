@@ -67,7 +67,7 @@ decay_lr=True
 def main():
     base_dir = os.getcwd()
     seeds = [ 2 ]
-    num_iters = [ 1600 ]
+    num_iters = [ 1641 ]
     # New name for wandb
     train_name = f"openwebtext_byt5_exp1_top1_numIter_{num_iters}"
 
