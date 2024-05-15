@@ -3,6 +3,7 @@ from transformers import AutoTokenizer
 import tiktoken
 from torch import Tensor, as_tensor
 import numpy as np
+
 @dataclass
 class Tokenizer:
     tokenizer_name: str

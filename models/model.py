@@ -157,7 +157,7 @@ class GPTConfig:
     straight_through: bool = False 
     moe_target_modules: List[str] = field(default_factory=lambda:  [ "mlp" ])   
 
-    gating_type = model_types.TOPK
+    gating_type: int = model_types.TOPK
     noise_type: str = model_types.GUMBEL
     is_per_token: bool = False
     gated_layer_id: int = 0
@@ -265,7 +265,7 @@ class GPT(nn.Module):
                 block.attn.bias = block.attn.bias[:,:,:block_size,:block_size]
 
     @classmethod
-    def from_pretrained(cls, model_type: str, override_args=None):
+    def from_pretrained(cls, model_type, override_args=None):
         """
         Loading pretrained GPT-2 models from HuggingFace hub.
         """

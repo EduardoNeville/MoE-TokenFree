@@ -11,6 +11,8 @@ from transformers import AutoTokenizer
 from datasets import DatasetDict, Dataset
 import multiprocessing as mp
 import time
+from model.tokenizer import Tokenizer
+import sys
 
 tokenizer = AutoTokenizer.from_pretrained("google/byt5-base")
 
@@ -47,6 +49,9 @@ def main():
     #     })
     # })
     
+    tokenizer = Tokenizer("tiktoken")
+    tokenized_text = tokenizer.tokenize("Hello, world!")
+
     print(f"Starting tokenization of the splits")
     start = time.time()
     tokenized = split_dataset.map(
