@@ -27,7 +27,7 @@ class Tokenizer:
         inputs = self.tokenizer(input_text, return_tensors="pt")["input_ids"]
         return inputs
 
-    def tiktoken_tokenization(self, input_text: str):
+    def tiktoken_tokenization(self, input_text)-> Tensor:
         inputs = self.tokenizer.encode_ordinary(input_text)
         inputs = as_tensor(np.array([inputs]))
         return inputs
