@@ -157,7 +157,7 @@ class GPTConfig:
     straight_through: bool = False 
     moe_target_modules: List[str] = field(default_factory=lambda:  [ "mlp" ])   
 
-    gating_type: str = model_types.TOPK
+    gating_type = model_types.TOPK
     noise_type: str = model_types.GUMBEL
     is_per_token: bool = False
     gated_layer_id: int = 0
@@ -174,7 +174,7 @@ class GPT(nn.Module):
         assert config.vocab_size is not None
         assert config.block_size is not None
         self.config = config
-        mlp_factory = get_custom_module_factory("mlp", config=config.moe_target_modules, module_factory=MLP)
+        mlp_factory = get_custom_module_factory(to_more_type_for("mlp", config.moe_target_modules), config, MLP)
         self.transformer = nn.ModuleDict(dict(
             wte = nn.Embedding(config.vocab_size, config.n_embd),
             wpe = nn.Embedding(config.block_size, config.n_embd),
@@ -199,7 +199,7 @@ class GPT(nn.Module):
         # report number of parameters
         print("number of parameters: %.2fM" % (self.get_num_params()/1e6,))
 
-    def get_num_params(self, non_embedding:bool=True):
+    def get_num_params(self, non_embedding=True):
         """
         Return the number of parameters in the model.
         For non-embedding count (default), the position embeddings get subtracted.
@@ -253,7 +253,7 @@ class GPT(nn.Module):
         return loss_for_back_propagate, loss_for_reporting
 
 
-    def crop_block_size(self, block_size: int):
+    def crop_block_size(self, block_size):
         # model surgery to decrease the block size if necessary
         # e.g. we may load the GPT2 pretrained model checkpoint (block size 1024)
         # but want to use a smaller block size for some smaller, simpler model
