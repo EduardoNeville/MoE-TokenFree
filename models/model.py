@@ -21,7 +21,7 @@ from typing import List
 from models import get_linear_factory, get_custom_module_factory, model_types
 
 # @torch.jit.script # good to enable when not using torch.compile, disable when using (our default)
-def new_gelu(x: Tensor)-> Tensor:
+def new_gelu(x):
     """
     Implementation of the GELU activation function currently in Google BERT repo (identical to OpenAI GPT).
     Reference: Gaussian Error Linear Units (GELU) paper: https://arxiv.org/abs/1606.08415
