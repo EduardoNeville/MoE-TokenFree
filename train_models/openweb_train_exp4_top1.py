@@ -55,7 +55,6 @@ shell_cmd = r"""python train.py \
 --router_lr_scaling=0.0 \
 --router_depth=1 \
 --load_balancing_lambda=0.01 \
---attention_type='standard' \
 """
 
 min_lk=6e-5
