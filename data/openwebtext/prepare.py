@@ -11,20 +11,20 @@ from transformers import AutoTokenizer
 from datasets import DatasetDict, Dataset
 import multiprocessing as mp
 import time
-from model.tokenizer import Tokenizer
-import sys
 
-tokenizer = AutoTokenizer.from_pretrained("google/byt5-base")
+from pathlib import Path
+import os, sys
+sys.path.append(os.path.abspath('../../model'))
 
-def enc_process(example):
-    ids = tokenizer(example['text']).input_ids
-    print(f"Processed {len(ids)} tokens")
-    return {'ids': ids, 'len': len(ids)}
+from tokenizer import Tokenizer
 
 def main():
     # number of workers in .map() call
     # good number to use is ~order number of cpu cores // 2
     num_proc = mp.cpu_count() # 2 
+
+    path_root = Path(__file__).parents[1]
+    sys.path.append(str(path_root))
 
     # takes 54GB in huggingface .cache dir, about 8M documents (8,013,769)
     print("loading openwebtext dataset 54GB in huggingface .cache dir, about 8M documents (8,013,769)")
@@ -49,28 +49,30 @@ def main():
     #     })
     # })
     
+    # Choose a tokenizer
     tokenizer = Tokenizer("tiktoken")
-    tokenized_text = tokenizer.tokenize("Hello, world!")
 
     print(f"Starting tokenization of the splits")
     start = time.time()
     tokenized = split_dataset.map(
-        enc_process,
+        tokenizer.tokenize,
         remove_columns=['text'],
         desc="tokenizing the splits",
         num_proc=num_proc,
     )
+    end = time.time()
     print(f"==========================================")
     print(f"==========================================")
-    print(f"Tokenization took {time.time() - start} seconds")
-    print(f"Tokenized dataset: {tokenized}")
+    print(f"Tokenization took {end - start} seconds")
     print(f"==========================================")
     print(f"==========================================")
     
     # concatenate all the ids in each dataset into one large file we can use for training
     for split, dset in tokenized.items():
         arr_len = np.sum(dset['len'])
-        filename = os.path.join(os.path.dirname(__file__), f'{split}.bin')
+        dirPath = os.path.join(f'tiktoken', os.path.dirname(__file__))
+        Path(dirPath).mkdir(parents=True, exist_ok=True)
+        filename = os.path.join(dirPath, f'{split}.bin')
         dtype = np.uint16 # (can do since enc.max_token_value == 50256 is < 2**16)
         arr = np.memmap(filename, dtype=dtype, mode='w+', shape=(arr_len,))
         total_batches = 1024
