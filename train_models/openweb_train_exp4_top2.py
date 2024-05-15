@@ -18,7 +18,7 @@ import sys
 shell_cmd = r"""python train.py \
 --dataset='openwebtext' \
 --init_from='scratch' \
---out_dir='openweb-byt5-exp-4-top-2' \
+--out_dir='openweb-byt5-exp4-top2' \
 --eval_interval=5 \
 --eval_iters=40 \
 --is_cached=False \
@@ -70,7 +70,7 @@ def main():
     seeds = [ 2 ]
     num_iters = [ 1600 ]
     # New name for wandb
-    train_name = f"openwebtext_byt5_exp_4_top_2_numIter_{num_iters}"
+    train_name = f"openwebtext_byt5_exp4_top2_numIter_{num_iters}"
 
     idx = 0
     for seed in seeds:
