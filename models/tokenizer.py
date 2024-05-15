@@ -1,16 +1,11 @@
-from dataclasses import dataclass, field
 from transformers import AutoTokenizer
 import tiktoken
 from torch import Tensor, as_tensor
 import numpy as np
 
-@dataclass
 class Tokenizer:
-    tokenizer_name: str
-    tokenizer = field(init=False)
-
-    def __post_init__(self):
-        self.tokenizer = self.tokenizer_selector(self.tokenizer_name)
+    def __init__(self, tokenizer_name: str) -> None:
+        self.tokenizer = self.tokenizer_selector(tokenizer_name)
 
     def tokenizer_selector(self, tokenizer_name: str):
         if tokenizer_name == "google/byt5-base":

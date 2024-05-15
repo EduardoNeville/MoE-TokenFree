@@ -14,7 +14,7 @@ import time
 
 from pathlib import Path
 import os, sys
-sys.path.append(os.path.abspath('../../model'))
+sys.path.append(os.path.abspath('models'))
 
 from tokenizer import Tokenizer
 
@@ -23,8 +23,8 @@ def main():
     # good number to use is ~order number of cpu cores // 2
     num_proc = mp.cpu_count() # 2 
 
-    path_root = Path(__file__).parents[1]
-    sys.path.append(str(path_root))
+    dirPath = os.path.join(os.path.dirname(__file__), f'tiktoken')
+    Path(dirPath).mkdir(parents=True, exist_ok=True)
 
     # takes 54GB in huggingface .cache dir, about 8M documents (8,013,769)
     print("loading openwebtext dataset 54GB in huggingface .cache dir, about 8M documents (8,013,769)")
@@ -70,8 +70,6 @@ def main():
     # concatenate all the ids in each dataset into one large file we can use for training
     for split, dset in tokenized.items():
         arr_len = np.sum(dset['len'])
-        dirPath = os.path.join(f'tiktoken', os.path.dirname(__file__))
-        Path(dirPath).mkdir(parents=True, exist_ok=True)
         filename = os.path.join(dirPath, f'{split}.bin')
         dtype = np.uint16 # (can do since enc.max_token_value == 50256 is < 2**16)
         arr = np.memmap(filename, dtype=dtype, mode='w+', shape=(arr_len,))
