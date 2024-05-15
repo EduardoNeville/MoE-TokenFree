@@ -59,6 +59,7 @@ wandb_org = 'mlo-neville'
 wandb_run_name = 'gpt2' # 'run' + str(time.time())
 # data
 dataset = 'openwebtext'
+# change the path
 train_file_names = [ 'train.bin' ]
 val_file_names = [ 'val.bin' ]
 gradient_accumulation_steps = 5 # used to simulate larger batch sizes
@@ -125,7 +126,7 @@ router_lr_scaling = 100.0
 global_routing = True
 router_depth = 1
 
-data_dir = ''
+data_dir = 'data/openwebtext/byt5_tokenization'
 temp_scheduler = None
 
 # -----------------------------------------------------------------------------
