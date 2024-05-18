@@ -28,6 +28,7 @@ def main():
     # good number to use is ~order number of cpu cores // 2
     num_proc = mp.cpu_count() # 2 
 
+    # Adding the correct dir path to the tokenized data
     dirPath = os.path.join(os.path.dirname(__file__), f'tiktoken')
     Path(dirPath).mkdir(parents=True, exist_ok=True)
 
