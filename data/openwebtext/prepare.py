@@ -2,8 +2,6 @@
 # https://github.com/HazyResearch/flash-attention/blob/main/training/src/datamodules/language_modeling_hf.py
 
 import os
-from re import split
-from numpy.lib.utils import byte_bounds
 from tqdm import tqdm
 import numpy as np
 from datasets import load_dataset # huggingface datasets
@@ -17,6 +15,13 @@ import os, sys
 sys.path.append(os.path.abspath('models'))
 
 from tokenizer import Tokenizer
+
+# Choose a tokenizer
+tiktokenizer = Tokenizer("tiktoken")
+
+def enc_process(example)-> dict:
+    ids = tiktokenizer.tokenize(example['text'])
+    return {'ids': ids, 'len': len(ids)}
 
 def main():
     # number of workers in .map() call
@@ -49,13 +54,11 @@ def main():
     #     })
     # })
     
-    # Choose a tokenizer
-    tokenizer = Tokenizer("tiktoken")
 
     print(f"Starting tokenization of the splits")
     start = time.time()
     tokenized = split_dataset.map(
-        tokenizer.tokenize,
+        enc_process,
         remove_columns=['text'],
         desc="tokenizing the splits",
         num_proc=num_proc,
