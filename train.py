@@ -55,7 +55,7 @@ init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
 # wandb logging
 wandb_log = True # disabled by default
 wandb_project = 'MoE-Tokenization'
-wandb_org = 'neville-mlo-org'
+wandb_org = 'neville-mlo'
 wandb_run_name = 'gpt2' # 'run' + str(time.time())
 # data
 dataset = 'openwebtext'
@@ -72,8 +72,8 @@ n_embd = 768
 dropout = 0 # for pretraining 0 is good, for finetuning try 0.1+
 bias = True # do we use bias inside LayerNorm and Linear layers?
 #---------
-#vocab_size = 50257  # GPT
-vocab_size = 256  # ByT5
+vocab_size = 50257  # GPT
+#vocab_size = 256  # ByT5
 #---------
 
 # LoRA params
@@ -227,7 +227,7 @@ best_val_loss = 1e9
 meta_path = os.path.join(data_dir, 'meta.pkl')
 
 #meta_vocab_size = 50257 # GPT
-meta_vocab_size = 256 # ByT5
+meta_vocab_size = None # ByT5
 if os.path.exists(meta_path):
     with open(meta_path, 'rb') as f:
         meta = pickle.load(f)

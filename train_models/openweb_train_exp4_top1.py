@@ -21,8 +21,8 @@ shell_cmd = r"""python train.py \
 --out_dir='openweb-byt5-exp4-top1' \
 --eval_interval=5 \
 --eval_iters=40 \
---is_cached=False \
---wandb_log=True \
+--is_cached=True \
+--wandb_log=False \
 --wandb_project='MoE-Tokenization' \
 --wandb_run_name=$wandb_name \
 --always_save_checkpoint=True \
@@ -69,7 +69,7 @@ def main():
     seeds = [ 2 ]
     num_iters = [ 4884 ]
     # New name for wandb
-    train_name = f"openwebtext_byt5_exp4_top1_numIter_{num_iters}"
+    train_name = f"openwebtext_byt5_exp4_top1"
 
     idx = 0
     for seed in seeds:
