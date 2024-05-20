@@ -23,7 +23,7 @@ shell_cmd = r"""python train.py \
 --eval_iters=40 \
 --is_cached=False \
 --wandb_log=True \
---wandb_project='ec-llm' \
+--wandb_project='MoE-Tokenization' \
 --wandb_run_name=$wandb_name \
 --always_save_checkpoint=True \
 --batch_size=8 \
@@ -67,7 +67,9 @@ decay_lr=True
 def main():
     base_dir = os.getcwd()
     seeds = [ 2 ]
-    num_iters = [ 4884 ]
+    # Byt5 iterations [ 4884 ]
+    # Tiktoken iterations [ ]
+    num_iters = [ ] 
     # New name for wandb
     train_name = f"openwebtext_byt5_exp4_top2_numIter_{num_iters}"
 
