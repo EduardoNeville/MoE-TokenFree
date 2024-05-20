@@ -70,25 +70,38 @@ def main():
     print(f"Tokenization took {end - start} seconds")
     print(f"==========================================")
     print(f"==========================================")
+
+    print(f"Here is the tokenized dataset shape: {tokenized}")
     
     # concatenate all the ids in each dataset into one large file we can use for training
     for split, dset in tokenized.items():
-        arr_len = sum(len(ids.flatten()) for ids in dset['ids'])
+        #arr_len = sum(len(ids.flatten()) for ids in dset['ids'])
         #arr_len = np.sum(dset['len'])
         filename = os.path.join(dirPath, f'{split}.bin')
         dtype = np.uint16 # (can do since enc.max_token_value == 50256 is < 2**16)
-        arr = np.memmap(filename, dtype=dtype, mode='w+', shape=(arr_len,))
-        total_batches = 1024
+        with open(filename, 'wb') as f:
+            total_batches = 1024  # You can adjust this based on your system's memory capacity
 
-        idx = 0
-        for batch_idx in tqdm(range(total_batches), desc=f'writing {filename}'):
-            # Batch together samples for faster write
-            batch = dset.shard(num_shards=total_batches, index=batch_idx, contiguous=True).with_format('numpy')
-            arr_batch = np.concatenate([ids.flatten() for ids in batch['ids']])
-            # Write into mmap
-            arr[idx : idx + len(arr_batch)] = arr_batch
-            idx += len(arr_batch)
-        arr.flush()
+            for batch_idx in tqdm(range(total_batches), desc=f'Writing {filename}'):
+                # Shard the dataset into smaller parts and convert to numpy format
+                batch = dset.shard(num_shards=total_batches, index=batch_idx, contiguous=True).with_format('numpy')
+                
+                # Flatten the ids from the current batch and concatenate
+                arr_batch = np.concatenate([ids.flatten() for ids in batch['ids']])
+                # Write the concatenated ids to the binary file
+                f.write(arr_batch.astype(dtype).tobytes())
+
+        # Write the concatenated ids to the binary file
+        #idx = 0
+        #arr = np.memmap(filename, dtype=dtype, mode='w+', shape=(arr_len,))
+        #for batch_idx in tqdm(range(total_batches), desc=f'writing {filename}'):
+        #    # Batch together samples for faster write
+        #    batch = dset.shard(num_shards=total_batches, index=batch_idx, contiguous=True).with_format('numpy')
+        #    arr_batch = np.concatenate([ids.flatten() for ids in batch['ids']])
+        #    # Write into mmap
+        #    arr[idx : idx + len(arr_batch)] = arr_batch
+        #    idx += len(arr_batch)
+        #arr.flush()
 
 if __name__ == '__main__':
     main()
