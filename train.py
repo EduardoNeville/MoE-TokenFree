@@ -126,6 +126,8 @@ router_lr_scaling = 100.0
 global_routing = True
 router_depth = 1
 
+# Byt5: /openwebtext/byt5_tokenization'
+# Tiktoken: /openwebtext/tiktoken_tokenization'
 data_dir = 'data/openwebtext/byt5_tokenization'
 temp_scheduler = None
 
