@@ -22,7 +22,7 @@ shell_cmd = r"""python train.py \
 --eval_interval=5 \
 --eval_iters=40 \
 --is_cached=True \
---wandb_log=False \
+--wandb_log=True \
 --wandb_project='MoE-Tokenization' \
 --wandb_run_name=$wandb_name \
 --always_save_checkpoint=True \
@@ -55,6 +55,7 @@ shell_cmd = r"""python train.py \
 --router_lr_scaling=0.0 \
 --router_depth=1 \
 --load_balancing_lambda=0.01 \
+--meta_vocab_size=256
 """
 
 min_lk=6e-5
