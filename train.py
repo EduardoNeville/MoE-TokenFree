@@ -54,8 +54,8 @@ always_save_checkpoint = True # if True, always save a checkpoint after each eva
 init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
 # wandb logging
 wandb_log = True # disabled by default
-wandb_project = 'ec-llm'
-wandb_org = 'mlo-neville'
+wandb_project = 'MoE-Tokenization'
+wandb_org = 'neville-mlo-org'
 wandb_run_name = 'gpt2' # 'run' + str(time.time())
 # data
 dataset = 'openwebtext'

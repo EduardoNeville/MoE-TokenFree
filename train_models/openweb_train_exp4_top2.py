@@ -69,7 +69,7 @@ def main():
     seeds = [ 2 ]
     # Byt5 iterations [ 4884 ]
     # Tiktoken iterations [ ]
-    num_iters = [ ] 
+    num_iters = [ 4884 ] 
     # New name for wandb
     train_name = f"openwebtext_byt5_exp4_top2_numIter_{num_iters}"
 
