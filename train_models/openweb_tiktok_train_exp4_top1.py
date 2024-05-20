@@ -14,15 +14,15 @@ import sys
 #change names of train and val dataset
 #Removed 
 #--attention_type='standard' \
-#--out_dir='wikitexts-byt5-std-'$wandb_name \
+#--out_dir='wikitexts-tiktoken-std-'$wandb_name \
 shell_cmd = r"""python train.py \
 --dataset='openwebtext' \
 --init_from='scratch' \
---out_dir='openweb-byt5-exp4-top2' \
+--out_dir='openweb-tiktoken-exp4-top1' \
 --eval_interval=5 \
 --eval_iters=40 \
---is_cached=False \
---wandb_log=True \
+--is_cached=True \
+--wandb_log=False \
 --wandb_project='MoE-Tokenization' \
 --wandb_run_name=$wandb_name \
 --always_save_checkpoint=True \
@@ -50,7 +50,7 @@ shell_cmd = r"""python train.py \
 --moe_lin_type='standard' \
 --straight_through=False \
 --global_routing=False \
---topk_exp=2 \
+--topk_exp=1 \
 --is_per_token=True \
 --router_lr_scaling=0.0 \
 --router_depth=1 \
@@ -67,9 +67,9 @@ decay_lr=True
 def main():
     base_dir = os.getcwd()
     seeds = [ 2 ]
-    num_iters = [ 4884 ] 
+    num_iters = [ 4884 ]
     # New name for wandb
-    train_name = f"openwebtext_byt5_exp4_top2"
+    train_name = f"openwebtext_tiktoken_exp4_top1"
 
     idx = 0
     for seed in seeds:

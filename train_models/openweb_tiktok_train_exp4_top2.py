@@ -18,7 +18,8 @@ import sys
 shell_cmd = r"""python train.py \
 --dataset='openwebtext' \
 --init_from='scratch' \
---out_dir='openweb-byt5-exp1-top1' \
+--out_dir='openweb-tiktoken-exp4-top2' \
+--data_dir='data/openwebtext/tiktoken_tokenization'
 --eval_interval=5 \
 --eval_iters=40 \
 --is_cached=False \
@@ -43,14 +44,14 @@ shell_cmd = r"""python train.py \
 --lin_type='standard' \
 --lora_rank=0 \
 --lora_alpha=32.0 \
---expert_num=1 \
+--expert_num=4 \
 --base_seed_offset=$seed \
 --noise_type='normal' \
 --load_balancing=True \
 --moe_lin_type='standard' \
 --straight_through=False \
 --global_routing=False \
---topk_exp=1 \
+--topk_exp=2 \
 --is_per_token=True \
 --router_lr_scaling=0.0 \
 --router_depth=1 \
@@ -67,10 +68,9 @@ decay_lr=True
 def main():
     base_dir = os.getcwd()
     seeds = [ 2 ]
-    # Byt5 iterations [ 1641 ]
-    num_iters = [ ]
+    num_iters = [ 4884 ] 
     # New name for wandb
-    train_name = f"openwebtext_byt5_exp1_top1_numIter_{num_iters}"
+    train_name = f"openwebtext_tiktoken_exp4_top2"
 
     idx = 0
     for seed in seeds:
