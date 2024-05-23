@@ -41,6 +41,8 @@ import torch._dynamo.config
 torch._dynamo.config.cache_size_limit = 256
 import torch._dynamo
 torch._dynamo.config.suppress_errors = True
+import torch._inductor
+torch._inductor.config.fallback_random = True
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
 # I/O
