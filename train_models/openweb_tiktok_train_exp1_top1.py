@@ -55,7 +55,8 @@ shell_cmd = r"""python train.py \
 --router_lr_scaling=0.0 \
 --router_depth=1 \
 --load_balancing_lambda=0.01 \
---vocab_size=$vocab_size
+--vocab_size=$vocab_size \
+--data_dir=$data_dir \
 """
 
 min_lk=6e-5
@@ -74,6 +75,7 @@ def main():
     train_name = f"openwebtext_tiktoken_exp1_top1"
 
     vocab_size = 50257
+    data_dir = 'data/openwebtext/tiktoken_tokenization'
 
     idx = 0
     for seed in seeds:
@@ -89,6 +91,7 @@ def main():
                         wandb_name=train_name,
                         num_iters=num_iter,
                         vocab_size=vocab_size,
+                        data_dir=data_dir,
                         lr=f"{learning_rate:0.6}",
                         min_lr=f"{min_lr:0.6}",
                         wd=f"{weight_decay:0.6}",

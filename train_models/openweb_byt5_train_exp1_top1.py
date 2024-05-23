@@ -21,8 +21,7 @@ shell_cmd = r"""python train.py \
 --out_dir='openweb-byt5-exp1-top1' \
 --eval_interval=5 \
 --eval_iters=40 \
---is_cached=False \
---wandb_log=True \
+--wandb_log=False \
 --wandb_project='MoE-Tokenization' \
 --wandb_run_name=$wandb_name \
 --always_save_checkpoint=True \
@@ -55,7 +54,8 @@ shell_cmd = r"""python train.py \
 --router_lr_scaling=0.0 \
 --router_depth=1 \
 --load_balancing_lambda=0.01 \
---vocab_size=$vocab_size
+--vocab_size=$vocab_size \
+--data_dir=$data_dir \
 """
 
 min_lk=6e-5
@@ -74,6 +74,8 @@ def main():
     train_name = f"openwebtext_byt5_exp1_top1"
 
     vocab_size = 256
+    data_dir = 'data/openwebtext/byt5_tokenization'
+
 
     idx = 0
     for seed in seeds:
@@ -89,6 +91,7 @@ def main():
                         wandb_name=train_name,
                         num_iters=num_iter,
                         vocab_size=vocab_size,
+                        data_dir=data_dir,
                         lr=f"{learning_rate:0.6}",
                         min_lr=f"{min_lr:0.6}",
                         wd=f"{weight_decay:0.6}",

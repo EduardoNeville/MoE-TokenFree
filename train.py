@@ -225,7 +225,7 @@ meta_path = os.path.join(data_dir, 'meta.pkl')
 
 #meta_vocab_size = 50257 # GPT
 #meta_vocab_size = 256 # ByT5
-meta_vocab_size = None
+meta_vocab_size = 0
 if os.path.exists(meta_path):
     with open(meta_path, 'rb') as f:
         meta = pickle.load(f)
