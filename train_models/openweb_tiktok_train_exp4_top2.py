@@ -19,7 +19,6 @@ shell_cmd = r"""python train.py \
 --dataset='openwebtext' \
 --init_from='scratch' \
 --out_dir='openweb-tiktoken-exp4-top2' \
---data_dir='data/openwebtext/tiktoken_tokenization'
 --eval_interval=5 \
 --eval_iters=40 \
 --is_cached=False \
