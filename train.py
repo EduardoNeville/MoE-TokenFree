@@ -72,7 +72,7 @@ dropout = 0 # for pretraining 0 is good, for finetuning try 0.1+
 bias = True # do we use bias inside LayerNorm and Linear layers?
 #---------
 #vocab_size = 50257  # GPT
-vocab_size = None  # ByT5
+vocab_size = 0  # ByT5
 #---------
 
 # LoRA params

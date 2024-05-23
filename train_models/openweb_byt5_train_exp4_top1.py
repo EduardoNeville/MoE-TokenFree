@@ -55,7 +55,7 @@ shell_cmd = r"""python train.py \
 --router_lr_scaling=0.0 \
 --router_depth=1 \
 --load_balancing_lambda=0.01 \
---meta_vocab_size=256
+--vocab_size=$vocab_size \
 """
 
 min_lk=6e-5
@@ -72,6 +72,8 @@ def main():
     # New name for wandb
     train_name = f"openwebtext_byt5_exp4_top1"
 
+    vocab_size = 256
+
     idx = 0
     for seed in seeds:
         for num_iter in num_iters:
@@ -85,6 +87,7 @@ def main():
                         **os.environ,  # Inherit original variables (e.g. conda)
                         wandb_name=train_name,
                         num_iters=num_iter,
+                        vocab_size=vocab_size,
                         lr=f"{learning_rate:0.6}",
                         min_lr=f"{min_lr:0.6}",
                         wd=f"{weight_decay:0.6}",
