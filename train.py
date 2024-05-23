@@ -53,7 +53,7 @@ eval_only = False # if True, script exits right after the first eval
 always_save_checkpoint = True # if True, always save a checkpoint after each eval
 init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
 # wandb logging
-wandb_log = True # disabled by default
+wandb_log = False # disabled by default
 wandb_project = 'MoE-Tokenization'
 wandb_org = 'neville-mlo'
 wandb_run_name = 'gpt2' # 'run' + str(time.time())
@@ -72,8 +72,8 @@ n_embd = 768
 dropout = 0 # for pretraining 0 is good, for finetuning try 0.1+
 bias = True # do we use bias inside LayerNorm and Linear layers?
 #---------
-vocab_size = 50257  # GPT
-#vocab_size = 256  # ByT5
+#vocab_size = 50257  # GPT
+vocab_size = 256  # ByT5
 #---------
 
 # LoRA params
@@ -103,15 +103,13 @@ dtype = 'bfloat16' # 'float32', 'bfloat16', or 'float16', the latter will auto i
 compile = True # use PyTorch 2.0 to compile the model to be faster
 
 router_type = model_types.STANDARD
-mlp_type = model_types.STANDARD
-lin_type = model_types.LINEAR
-moe_lin_type = model_types.LORA
+#mlp_type = model_types.STANDARD
+#lin_type = model_types.LINEAR
+#moe_lin_type = model_types.LORA
 gating_type = model_types.TOPK
 
 moe_target_modules = [ "mlp" ]
 lora_target_modules = [ "c_attn", "att.c_proj", "mlp.c_fc", "mlp.c_proj" ]
-
-is_cached = True
 
 expert_num = 1 # number of experts
 topk_exp = 1 # topk experts to activate
@@ -122,9 +120,9 @@ load_balancing = False
 load_balancing_lambda = 0.01
 straight_through = False
 is_per_token = False
-router_lr_scaling = 100.0
-global_routing = True
-router_depth = 1
+#router_lr_scaling = 100.0
+#global_routing = True
+#router_depth = 1
 
 # Byt5: /openwebtext/byt5_tokenization'
 # Tiktoken: /openwebtext/tiktoken_tokenization'
@@ -481,7 +479,9 @@ model_opt_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"====> Model Params: {model_params}")
 print(f"----> Model optimized Params: {model_opt_params}")
 print(f"----> Vocabulary size: {vocab_size}")
+print(f"====> optimized: ", [ n for n, p in model.named_parameters() if p.requires_grad ])
 print(f"====> frozen: ", [ n for n, p in model.named_parameters() if not p.requires_grad ])
+print(f"===> MODELS: {model}")
 
 # logging
 
@@ -491,7 +491,6 @@ if wandb_log and master_process:
     wand_args['model_params'] = model_params
     wand_args['model_opt_params'] = model_opt_params
     wandb.init(project=wandb_project, entity=wandb_org, name=wandb_run_name, config=config, )
-
 
 # training loop
 batch_time_m = AverageMeter()
