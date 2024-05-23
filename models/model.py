@@ -15,7 +15,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from torch import Tensor
 from typing import List
 
 from models import get_linear_factory, get_custom_module_factory, model_types
@@ -76,7 +75,7 @@ class CausalSelfAttention(nn.Module):
             print("WARNING: using slow attention. Flash Attention requires PyTorch >= 2.0")
             # causal mask to ensure that attention is only applied to the left in the input sequence
             self.register_buffer("bias", torch.tril(torch.ones(config.block_size, config.block_size))
-            .view(1, 1, config.block_size, config.block_size))
+                                        .view(1, 1, config.block_size, config.block_size))
 
     def forward(self, x):
         B, T, C = x.size() # batch size, sequence length, embedding dimensionality (n_embd)
@@ -236,8 +235,6 @@ class GPT(nn.Module):
                 # TODO: fix for attention MoE
                 load_balancing_loss += block.mlp.get_load_balancing_loss(x)
         x = self.transformer.ln_f(x)
-        loss_for_reporting = None
-        loss_for_back_propagate = None
         if targets is not None:
             # if we are given some desired targets also calculate the loss
             logits = self.lm_head(x)
@@ -288,20 +285,45 @@ class GPT(nn.Module):
         config_args['vocab_size'] = 50257 # always 50257 for GPT model checkpoints
         config_args['block_size'] = 1024 # always 1024 for GPT model checkpoints
         config_args['bias'] = True # always True for GPT model checkpoints
-
-        args = [ 'dropout', 'lora_rank', 'batch_size', 'device', 'gating_type', 'router_type', 'lin_type', 'expert_num', 'noise_type', 'load_balancing', 'load_balancing_lambda', 'straight_through', 'is_per_token', 'topk_exp', 'moe_target_modules', 'lora_target_modules']
-
-        for arg in args:
-            if arg in override_args:
-                if arg == 'dropout':
-                    print(f"overriding dropout rate to {override_args['dropout']}")
-                if arg == 'lora_rank':
-                    print(f"overriding lora_rank and lora_alpha to {override_args['lora_rank']}")
-                    config_args['lora_alpha'] = override_args['lora_alpha']
-                    if 'lora_dropout' in override_args:
-                        print(f"overriding lora_dropout to {override_args['lora_dropout']}")
-                        config_args['lora_dropout'] = override_args['lora_dropout']
-                config_args[arg] = override_args[arg]
+        # we can override the dropout rate, if desired
+        if 'dropout' in override_args:
+            print(f"overriding dropout rate to {override_args['dropout']}")
+            config_args['dropout'] = override_args['dropout']
+        if 'lora_rank' in override_args:
+            print(f"overriding lora_rank and lora_alpha to {override_args['lora_rank']}")
+            config_args['lora_rank'] = override_args['lora_rank']
+            config_args['lora_alpha'] = override_args['lora_alpha']
+            if 'lora_dropout' in override_args:
+                print(f"overriding lora_dropout to {override_args['lora_dropout']}")
+                config_args['lora_dropout'] = override_args['lora_dropout']
+        if 'batch_size' in override_args:
+            config_args['batch_size'] = override_args['batch_size']
+        if 'device' in override_args:
+            config_args['device'] = override_args['device']
+        if 'gating_type' in override_args:
+            config_args['gating_type'] = override_args['gating_type']
+        if 'router_type' in override_args:
+            config_args['router_type'] = override_args['router_type']
+        if 'lin_type' in override_args:
+            config_args['lin_type'] = override_args['lin_type']
+        if 'expert_num' in override_args:
+            config_args['expert_num'] = override_args['expert_num']
+        if 'noise_type' in override_args:
+            config_args['noise_type'] = override_args['noise_type']
+        if 'load_balancing' in override_args:
+            config_args['load_balancing'] = override_args['load_balancing']
+        if 'load_balancing_lambda' in override_args:
+            config_args['load_balancing_lambda'] = override_args['load_balancing_lambda']
+        if 'straight_through' in override_args:
+            config_args['straight_through'] = override_args['straight_through']
+        if 'is_per_token' in override_args:
+            config_args['is_per_token'] = override_args['is_per_token']
+        if 'topk_exp' in override_args:
+            config_args['topk_exp'] = override_args['topk_exp']
+        if 'moe_target_modules' in override_args:
+            config_args['moe_target_modules'] = override_args['moe_target_modules']
+        if 'lora_target_modules' in override_args:
+            config_args['lora_target_modules'] = override_args['lora_target_modules']
 
         # create a from-scratch initialized minGPT model
         config = GPTConfig(**config_args)

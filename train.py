@@ -59,7 +59,6 @@ wandb_org = 'neville-mlo'
 wandb_run_name = 'gpt2' # 'run' + str(time.time())
 # data
 dataset = 'openwebtext'
-# change the path
 train_file_names = [ 'train.bin' ]
 val_file_names = [ 'val.bin' ]
 gradient_accumulation_steps = 5 # used to simulate larger batch sizes
@@ -111,6 +110,8 @@ gating_type = model_types.TOPK
 moe_target_modules = [ "mlp" ]
 lora_target_modules = [ "c_attn", "att.c_proj", "mlp.c_fc", "mlp.c_proj" ]
 
+is_cached = True
+
 expert_num = 1 # number of experts
 topk_exp = 1 # topk experts to activate
 base_seed_offset = 0
@@ -120,12 +121,10 @@ load_balancing = False
 load_balancing_lambda = 0.01
 straight_through = False
 is_per_token = False
-#router_lr_scaling = 100.0
-#global_routing = True
-#router_depth = 1
+router_lr_scaling = 100.0
+global_routing = True
+router_depth = 1
 
-# Byt5: /openwebtext/byt5_tokenization'
-# Tiktoken: /openwebtext/tiktoken_tokenization'
 data_dir = 'data/openwebtext/byt5_tokenization'
 temp_scheduler = None
 
@@ -224,7 +223,8 @@ best_val_loss = 1e9
 # attempt to derive vocab_size from the dataset
 meta_path = os.path.join(data_dir, 'meta.pkl')
 
-meta_vocab_size = None # ByT5
+#meta_vocab_size = 50257 # GPT
+meta_vocab_size = 256 # ByT5
 if os.path.exists(meta_path):
     with open(meta_path, 'rb') as f:
         meta = pickle.load(f)
@@ -240,6 +240,8 @@ if init_from == 'scratch':
     # init a new model from scratch
     print("Initializing a new model from scratch")
     # determine the vocab size we'll use for from-scratch training
+    if meta_vocab_size is None:
+        print("defaulting to vocab_size of GPT-2 to 50304 (50257 rounded up for efficiency)")
 
     # Removed 
     # attention_type=attention_type
@@ -476,10 +478,9 @@ model_params = sum(p.numel() for p in model.parameters())
 model_opt_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"====> Model Params: {model_params}")
 print(f"----> Model optimized Params: {model_opt_params}")
-print(f"----> Vocabulary size: {vocab_size}")
-print(f"====> optimized: ", [ n for n, p in model.named_parameters() if p.requires_grad ])
-print(f"====> frozen: ", [ n for n, p in model.named_parameters() if not p.requires_grad ])
 print(f"===> MODELS: {model}")
+print(f"----> Vocabulary size: {vocab_size}")
+print(f"====> frozen: ", [ n for n, p in model.named_parameters() if not p.requires_grad ])
 
 # logging
 
@@ -489,6 +490,7 @@ if wandb_log and master_process:
     wand_args['model_params'] = model_params
     wand_args['model_opt_params'] = model_opt_params
     wandb.init(project=wandb_project, entity=wandb_org, name=wandb_run_name, config=config, )
+
 
 # training loop
 batch_time_m = AverageMeter()
