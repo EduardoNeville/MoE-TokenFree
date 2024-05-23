@@ -28,10 +28,10 @@ def new_gelu(x):
     """
     return 0.5 * x * (1.0 + torch.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * torch.pow(x, 3.0))))
 
-def to_lin_type_for(name: str, target_modules)-> str:
+def to_lin_type_for(name, target_modules):
     return  model_types.LORA if name in target_modules else model_types.STANDARD
 
-def to_more_type_for(name: str, target_modules) -> str:
+def to_more_type_for(name, target_modules):
     return  model_types.MOE if name in target_modules else model_types.STANDARD
 
 class LayerNorm(nn.Module):
@@ -148,7 +148,7 @@ class GPTConfig:
 
     # lora_target_modules: List[str] = field(default_factory=lambda: model_types.C_PROJ)
     lora_rank: int = 0
-    lora_alpha: int = 0
+    lora_alpha: int = 0.0
     lora_dropout: float = 0.0
     lora_target_modules: List[str] = field(default_factory=lambda: [ "c_attn", "mlp.c_proj" ])
 

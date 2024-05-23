@@ -103,9 +103,9 @@ dtype = 'bfloat16' # 'float32', 'bfloat16', or 'float16', the latter will auto i
 compile = True # use PyTorch 2.0 to compile the model to be faster
 
 router_type = model_types.STANDARD
-#mlp_type = model_types.STANDARD
-#lin_type = model_types.LINEAR
-#moe_lin_type = model_types.LORA
+mlp_type = model_types.STANDARD
+lin_type = model_types.LINEAR
+moe_lin_type = model_types.LORA
 gating_type = model_types.TOPK
 
 moe_target_modules = [ "mlp" ]
@@ -240,8 +240,6 @@ if init_from == 'scratch':
     # init a new model from scratch
     print("Initializing a new model from scratch")
     # determine the vocab size we'll use for from-scratch training
-    if meta_vocab_size is None:
-        print("defaulting to vocab_size of GPT-2 to 50304 (50257 rounded up for efficiency)")
 
     # Removed 
     # attention_type=attention_type

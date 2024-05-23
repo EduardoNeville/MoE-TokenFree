@@ -22,7 +22,7 @@ def _gating_factory(config):
     else:
         raise ValueError("unknown gating type {config.gating_type}")
 
-def get_custom_module_factory(desc:str, config, module_factory):
+def get_custom_module_factory(desc, config, module_factory):
     if desc == model_types.STANDARD:
         return lambda _: module_factory(config)
     elif desc == model_types.MOE:
@@ -30,7 +30,7 @@ def get_custom_module_factory(desc:str, config, module_factory):
     else:
         raise ValueError(f"unknown model type {desc}")
 
-def get_router_factory(desc, config)-> dict[str, torch.nn.Module]:
+def get_router_factory(desc, config):
     factories = {
         **dict.fromkeys(
             [model_types.STANDARD, model_types.LINEAR],
