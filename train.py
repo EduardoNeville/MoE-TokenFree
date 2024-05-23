@@ -41,8 +41,6 @@ import torch._dynamo.config
 torch._dynamo.config.cache_size_limit = 256
 import torch._dynamo
 torch._dynamo.config.suppress_errors = True
-import torch._inductor
-torch._inductor.config.fallback_random = True
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
 # I/O
@@ -74,7 +72,7 @@ dropout = 0 # for pretraining 0 is good, for finetuning try 0.1+
 bias = True # do we use bias inside LayerNorm and Linear layers?
 #---------
 #vocab_size = 50257  # GPT
-vocab_size = 256  # ByT5
+vocab_size = None  # ByT5
 #---------
 
 # LoRA params
@@ -226,7 +224,8 @@ best_val_loss = 1e9
 meta_path = os.path.join(data_dir, 'meta.pkl')
 
 #meta_vocab_size = 50257 # GPT
-meta_vocab_size = 256 # ByT5
+#meta_vocab_size = 256 # ByT5
+meta_vocab_size = None
 if os.path.exists(meta_path):
     with open(meta_path, 'rb') as f:
         meta = pickle.load(f)
@@ -237,6 +236,7 @@ if os.path.exists(meta_path):
 # Note: we only want to do LoRA fine-tuning when we resume or start with a pretrained model and NOT when we start from scratch
 model_args = dict(n_layer=n_layer, n_head=n_head, n_embd=n_embd, block_size=block_size, bias=bias, vocab_size=vocab_size, dropout=dropout) # start with model_args from command line
 
+meta_vocab_size = vocab_size
 print("========> LORA RANK: ", lora_rank)
 if init_from == 'scratch':
     # init a new model from scratch
