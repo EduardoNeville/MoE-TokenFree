@@ -106,6 +106,7 @@ mlp_type = model_types.STANDARD
 lin_type = model_types.LINEAR
 moe_lin_type = model_types.LORA
 gating_type = model_types.TOPK
+attention_type=model_types.STANDARD
 
 moe_target_modules = [ "mlp" ]
 lora_target_modules = [ "c_attn", "att.c_proj", "mlp.c_fc", "mlp.c_proj" ]
@@ -124,6 +125,7 @@ is_per_token = False
 router_lr_scaling = 100.0
 global_routing = True
 router_depth = 1
+
 
 data_dir = 'data/openwebtext/byt5_tokenization'
 temp_scheduler = None
@@ -246,8 +248,7 @@ if init_from == 'scratch':
         print("defaulting to vocab_size of GPT-2 to 50304 (50257 rounded up for efficiency)")
 
     # Removed 
-    # attention_type=attention_type
-    # batch_size = batch_size
+    #batch_size = batch_size
     #mlp_type=mlp_type,
     #lin_type=lin_type,
     #moe_lin_type=moe_lin_type,
@@ -277,7 +278,8 @@ if init_from == 'scratch':
         block_size=block_size,
         bias=bias,
         lora_target_modules=lora_target_modules,
-        moe_target_modules=moe_target_modules
+        moe_target_modules=moe_target_modules,
+        attention_type=attention_type
     )
 
     model_args['vocab_size'] = meta_vocab_size if meta_vocab_size is not None else 50304
