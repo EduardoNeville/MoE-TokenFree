@@ -25,6 +25,7 @@ shell_cmd = r"""python train.py \
 --wandb_project='MoE-Tokenization' \
 --wandb_run_name=$wandb_name \
 --always_save_checkpoint=True \
+--is_cached=False \
 --batch_size=8 \
 --gradient_accumulation_steps=16 \
 --max_iters=$num_iters \

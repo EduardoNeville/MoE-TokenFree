@@ -110,7 +110,7 @@ gating_type = model_types.TOPK
 moe_target_modules = [ "mlp" ]
 lora_target_modules = [ "c_attn", "att.c_proj", "mlp.c_fc", "mlp.c_proj" ]
 
-is_cached = True
+is_cached = False
 
 expert_num = 1 # number of experts
 topk_exp = 1 # topk experts to activate
