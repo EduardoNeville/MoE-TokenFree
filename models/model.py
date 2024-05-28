@@ -235,6 +235,7 @@ class GPT(nn.Module):
                 # TODO: fix for attention MoE
                 load_balancing_loss += block.mlp.get_load_balancing_loss(x)
         x = self.transformer.ln_f(x)
+
         if targets is not None:
             # if we are given some desired targets also calculate the loss
             logits = self.lm_head(x)
@@ -242,11 +243,13 @@ class GPT(nn.Module):
             if self.config.load_balancing:
                 load_balancing_loss = load_balancing_loss / self.config.n_layer
                 loss_for_back_propagate = loss_for_reporting + self.config.load_balancing_lambda * load_balancing_loss
+            else: 
+                loss_for_back_propagate = loss_for_reporting
         else:
             # inference-time mini-optimization: only forward the lm_head on the very last position
             logits = self.lm_head(x[:, [-1], :]) # note: using list [-1] to preserve the time dim
-            loss_for_back_propagate = None
-            loss_for_reporting = None
+            loss_for_back_propagate = None 
+            loss_for_reporting = None 
         return loss_for_back_propagate, loss_for_reporting
 
 
@@ -526,5 +529,5 @@ class GPT(nn.Module):
             idx_next = torch.multinomial(probs, num_samples=1)
             # append sampled index to the running sequence and continue
             idx = torch.cat((idx, idx_next), dim=1)
-
         return idx
+

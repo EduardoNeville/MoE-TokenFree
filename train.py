@@ -70,6 +70,7 @@ n_head = 12
 n_embd = 768
 dropout = 0 # for pretraining 0 is good, for finetuning try 0.1+
 bias = True # do we use bias inside LayerNorm and Linear layers?
+is_cached = False
 #---------
 #vocab_size = 50257  # GPT
 vocab_size = 0  # ByT5
@@ -102,16 +103,11 @@ dtype = 'bfloat16' # 'float32', 'bfloat16', or 'float16', the latter will auto i
 compile = True # use PyTorch 2.0 to compile the model to be faster
 
 router_type = model_types.STANDARD
-mlp_type = model_types.STANDARD
-lin_type = model_types.LINEAR
-moe_lin_type = model_types.LORA
 gating_type = model_types.TOPK
 attention_type=model_types.STANDARD
 
 moe_target_modules = [ "mlp" ]
 lora_target_modules = [ "c_attn", "att.c_proj", "mlp.c_fc", "mlp.c_proj" ]
-
-is_cached = False
 
 expert_num = 1 # number of experts
 topk_exp = 1 # topk experts to activate
@@ -122,10 +118,6 @@ load_balancing = False
 load_balancing_lambda = 0.01
 straight_through = False
 is_per_token = False
-router_lr_scaling = 100.0
-global_routing = True
-router_depth = 1
-
 
 data_dir = 'data/openwebtext/byt5_tokenization'
 temp_scheduler = None
@@ -279,7 +271,6 @@ if init_from == 'scratch':
         bias=bias,
         lora_target_modules=lora_target_modules,
         moe_target_modules=moe_target_modules,
-        attention_type=attention_type
     )
 
     model_args['vocab_size'] = meta_vocab_size if meta_vocab_size is not None else 50304
@@ -518,14 +509,15 @@ print('=============> num of param groups:', len(optimizer.param_groups))
 while True:
     # determine and set the learning rate for this iteration
     lr = get_lr(iter_num) if decay_lr else learning_rate
-    for idx, param_group in enumerate(optimizer.param_groups):
-        param_group['lr'] = lr
-        if idx == 2:
-            param_group['lr'] = router_lr_scaling*lr
+    # Commented for debuging purposes
+    #for idx, param_group in enumerate(optimizer.param_groups):
+    #    param_group['lr'] = lr
+    #    if idx == 2:
+    #        param_group['lr'] = router_lr_scaling*lr
 
-    print('==========> learning rate checking:')
-    for i, param_group in enumerate(optimizer.param_groups):
-        print(f"Group {i + 1}: Learning Rate = {param_group['lr']}")
+    #print('==========> learning rate checking:')
+    #for i, param_group in enumerate(optimizer.param_groups):
+    #    print(f"Group {i + 1}: Learning Rate = {param_group['lr']}")
 
     print('==========> Evaluation of loss on train/val:')
     # evaluate the loss on train/val sets and write checkpoints
