@@ -145,9 +145,10 @@ def eval(args, tokenizer, model, subject, dev_df, test_df):
 
 
 def main(args):
+
     subjects = sorted(
         [
-            f.split("_test.csv")[0]
+            f.split("_test.csv")[0].replace(".","")
             for f in os.listdir(os.path.join(args.data_dir, "test"))
             if "_test.csv" in f
         ]
@@ -207,10 +208,11 @@ def main(args):
     all_cors = []
 
     for subject in subjects:
-        subject.replace('.','')
+        print(f"Subject: {subject}")
         dev_df = pd.read_csv(
             os.path.join(args.data_dir, "dev", subject + "_dev.csv"), header=None
         )[: args.ntrain]
+        print(f"Path to test {os.path.join(args.data_dir, 'test', subject + '_test.csv')}")
         test_df = pd.read_csv(
             os.path.join(args.data_dir, "test", subject + "_test.csv"), header=None
         )
