@@ -1,6 +1,6 @@
 model=$1
 exp=$2
-results="results/mmlu"
+results="results/mmlu/"
 tokenizer_path=""
 num_experts=1
 num_select=1
