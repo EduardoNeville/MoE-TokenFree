@@ -2,7 +2,8 @@ model=$1
 exp=$2
 eval_name="$3"
 echo "$eval_name"
-if [$eval_name = "mmlu"] then
+if [ $eval_name = "mmlu" ]
+then
     results="results/mmlu/"
     data_dir="evals/mmlu/mmlu/data"
 else 
