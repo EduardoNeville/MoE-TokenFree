@@ -1,6 +1,6 @@
 model=$1
 exp=$2
-results="results/"
+results="results/mmlu"
 tokenizer_path=""
 num_experts=1
 num_select=1
@@ -11,19 +11,22 @@ case ${model} in
         tokenizer_path="tiktoken"
         case ${exp} in
             "std")
-                model_path="model_weights"/${model}/${exp}/"out-wikitexts-gpt-wikitexts_gpt_exp_num_1_topk_exp_1_num_iter_2373_lr_0.0006_wd_0.1_seed_2_tm_1713627144.8572702_0/ckpt.pt"
+                model_path="openweb-tiktoken-exp1-top1"
                 num_experts=1
+                num_select=1
                 save_dir=$results"gpt/std"
                 ;;
             "exp_4_top_2")
-                model_path="model_weights"/${model}/${exp}/"out-wikitexts-gpt-wikitexts_exp_num_4_topk_exp_2_num_iter_5616_lr_0.0006_wd_0.1_seed_2_ts_1713626623.2495303_0/ckpt.pt"
+                model_path="openweb-tiktoken-exp4-top2"
                 num_experts=4
+                num_select=2
                 save_dir=$results"gpt/exp_4_top_2"
                 ;;
-            "exp_6_top_3")
-                model_path="model_weights"/${model}/${exp}/"todo"
-                num_experts=6
-                save_dir=$results"gpt/exp_6_top_3"
+            "exp_4_top_1")
+                model_path="openweb-tiktoken-exp4-top1"
+                num_experts=4
+                num_select=1
+                save_dir=$results"gpt/exp_4_top_1"
                 ;;
             *)
                 echo "No compatible expert setup"
@@ -36,20 +39,22 @@ case ${model} in
         tokenizer_path="google/byt5-base"
         case ${exp} in
             "std")
-                model_path="model_weights"/${model}/${exp}/"out-wikitexts-gpt-wikitexts_exp_num_1_topk_exp_1_lr_0.0006_wd_0.1_num_iter_1600_seed_2_ts_1712870865.8761034_0/ckpt.pt"
+                model_path="openweb-byt5-exp1-top1"
                 num_experts=1
+                num_select=1
                 save_dir=$results"byt5/std"
                 ;;
             "exp_4_top_2")
-                model_path="model_weights"/${model}/${exp}/"out-wikitexts-gpt-wikitexts_exp_num_4_topk_exp_2_lr_0.0006_wd_0.1_num_iter_4885_seed_2_tm_1713456988.1967895_0/ckpt.pt"
+                model_path="openweb-byt5-exp4-top2"
                 num_experts=4
                 num_select=2
                 save_dir=$results"byt5/exp_4_top_2"
                 ;;
-            "exp_6_top_3")
-                model_path="model_weights"/${model}/${exp}/""
-                num_experts=6
-                save_dir=$results"byt5/exp_6_top_3"
+            "exp_4_top_1")
+                model_path="openweb-byt5-exp4-top1"
+                num_experts=4
+                num_select=1
+                save_dir=$results"byt5/exp_4_top_1"
                 ;;
             *)
                 echo "No compatible expert setup"
