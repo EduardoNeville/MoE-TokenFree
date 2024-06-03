@@ -1,6 +1,6 @@
 model=$1
 exp=$2
-results="results/mmlu/"
+results="results/arc_easy/"
 tokenizer_path=""
 num_experts=1
 num_select=1
@@ -72,7 +72,7 @@ echo "Number of experts: $num_experts"
 echo "save_dir: $save_dir"
 
 script="evals/mmlu/mmlu/mmlu_eval.py"
-data_dir="evals/mmlu/mmlu/data"
+data_dir="evals/arc_easy/data"
 
 #test -f $model_path && echo 'Model exists' || echo 'Model does not exist'
 
