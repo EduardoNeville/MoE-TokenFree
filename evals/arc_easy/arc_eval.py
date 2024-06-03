@@ -3,7 +3,7 @@ import csv
 # Load the dataset from Hugging Face
 dataset = load_dataset("ibragim-bad/arc_easy")
 # Open a CSV file for writing
-with open('evals/arc_easy/data/arc_easy.csv', mode='w', newline='') as file:
+with open('evals/arc_easy/data/test/arc_easy.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
     
     # Write the header

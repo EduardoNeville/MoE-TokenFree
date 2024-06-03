@@ -207,6 +207,7 @@ def main(args):
     all_cors = []
 
     for subject in subjects:
+        subject.replace('.','')
         dev_df = pd.read_csv(
             os.path.join(args.data_dir, "dev", subject + "_dev.csv"), header=None
         )[: args.ntrain]
