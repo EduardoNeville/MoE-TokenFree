@@ -11,19 +11,19 @@ case ${model} in
         tokenizer_path="tiktoken"
         case ${exp} in
             "std")
-                model_path="openweb-tiktoken-exp1-top1"
+                model_path="openweb-tiktoken-exp1-top1/ckpt.pt"
                 num_experts=1
                 num_select=1
                 save_dir=$results"gpt/std"
                 ;;
             "exp_4_top_2")
-                model_path="openweb-tiktoken-exp4-top2"
+                model_path="openweb-tiktoken-exp4-top2/ckpt.pt"
                 num_experts=4
                 num_select=2
                 save_dir=$results"gpt/exp_4_top_2"
                 ;;
             "exp_4_top_1")
-                model_path="openweb-tiktoken-exp4-top1"
+                model_path="openweb-tiktoken-exp4-top1/ckpt.pt"
                 num_experts=4
                 num_select=1
                 save_dir=$results"gpt/exp_4_top_1"
@@ -39,19 +39,19 @@ case ${model} in
         tokenizer_path="google/byt5-base"
         case ${exp} in
             "std")
-                model_path="openweb-byt5-exp1-top1"
+                model_path="openweb-byt5-exp1-top1/ckpt.pt"
                 num_experts=1
                 num_select=1
                 save_dir=$results"byt5/std"
                 ;;
             "exp_4_top_2")
-                model_path="openweb-byt5-exp4-top2"
+                model_path="openweb-byt5-exp4-top2/ckpt.pt"
                 num_experts=4
                 num_select=2
                 save_dir=$results"byt5/exp_4_top_2"
                 ;;
             "exp_4_top_1")
-                model_path="openweb-byt5-exp4-top1"
+                model_path="openweb-byt5-exp4-top1/ckpt.pt"
                 num_experts=4
                 num_select=1
                 save_dir=$results"byt5/exp_4_top_1"
@@ -74,7 +74,7 @@ echo "save_dir: $save_dir"
 script="evals/mmlu/mmlu/mmlu_eval.py"
 data_dir="evals/mmlu/mmlu/data"
 
-test -f $model_path && echo 'Model exists' || echo 'Model does not exist'
+#test -f $model_path && echo 'Model exists' || echo 'Model does not exist'
 
 # Run the evaluation script
 python $script --model_path $model_path --tokenizer_path $tokenizer_path --num_experts $num_experts --num_selects $num_select --save_dir $save_dir --data_dir $data_dir
