@@ -49,3 +49,4 @@ models/124M/
 
 # Ignore evals data
 evals/mmlu/mmlu/data/
+evals/coqa/data/
