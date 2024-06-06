@@ -2,13 +2,17 @@ model=$1
 exp=$2
 eval_name="$3"
 echo "$eval_name"
-if [ $eval_name = "mmlu" ]
-then
+if [[ $eval_name = "mmlu" ]]; then
     results="results/mmlu/"
     data_dir="evals/mmlu/mmlu/data"
-else 
+elif  [[ $eval_name = "arc_easy" ]]; then
     results="results/arc_easy/"
     data_dir="evals/arc_easy/data"
+elif  [[ $eval_name = "coqa" ]]; then
+    results="results/coqa/"
+    data_dir="evals/coqa/data"
+else
+    echo "No evaluation provided \n"
 fi
 tokenizer_path=""
 num_experts=1
