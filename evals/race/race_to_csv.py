@@ -43,16 +43,17 @@ csvDev = csvData[:50]
 csvTest = csvData[51:]
 
 # Ensure the directories exist
-os.makedirs('evals/race/test', exist_ok=True)
-os.makedirs('evals/race/dev', exist_ok=True)
+os.makedirs('evals/race/data', exist_ok=True)
+os.makedirs('evals/race/data/test', exist_ok=True)
+os.makedirs('evals/race/data/dev', exist_ok=True)
 # Write to race_test.csv
-with open('evals/race/test/race_test.csv', 'w', newline='') as csvfile:
+with open('evals/race/data/test/race_test.csv', 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(['Article and Question', 'Option A', 'Option B', 'Option C', 'Option D', 'Correct Answer'])
     csvwriter.writerows(csvTest)
 print("Test csv created!")
 # Write to race_dev.csv
-with open('evals/race/dev/race_dev.csv', 'w', newline='') as csvfile:
+with open('evals/race/data/dev/race_dev.csv', 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(['Article and Question', 'Option A', 'Option B', 'Option C', 'Option D', 'Correct Answer'])
     csvwriter.writerows(csvDev)
